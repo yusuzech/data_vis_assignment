@@ -1,7 +1,7 @@
 #--------------------------------------------
 #setup ("setup" function in "setup.R)
 setup(desired_working_file_name = "team_assignment_1",
-      required_packages = c("tidyverse","stringr","forcats"),
+      required_packages = c("tidyverse","stringr","forcats","ggrepel"),
       data_urls = "https://raw.githubusercontent.com/yusuzech/data_vis_assignment/master/movie.csv")
 
 #-------------------------------------------
@@ -33,7 +33,7 @@ g1 <- d1 %>%
 d1_text <- d1 %>%
   filter(abs(imdb_minus_movielens) > 1)
 g1_1 <- g1 + 
-  geom_text(mapping = aes(x = x, y = imdb_minus_movielens, label = movie_title), data = d1_text, nudge_x = 0.2,nudge_y = 0.15) +
+  geom_text_repel(mapping = aes(x = x, y = imdb_minus_movielens, label = movie_title), data = d1_text, nudge_x = 0.2,nudge_y = 0.15) +
   geom_hline(yintercept = 0, color = "red");g1_1
 
 #find those exceptional movies and see these movies' performance
@@ -56,22 +56,17 @@ g2 <- movie %>%
 d2_text <- tibble(x = -Inf, y = Inf, correlation = round(with(movie,cor(avg_rating,adjusted_gross)),6)) %>%
   mutate(text = str_c("Correaltio between adjusted gross revenue and average rating\n",correlation))
 
-g2_text <- g2 +geom_text(mapping  = aes( x = x, y =y, label = text),data = d2_text, hjust = "left", vjust = "top")
+g2_text <- g2 +geom_text_repel(mapping  = aes( x = x, y =y, label = text),data = d2_text, hjust = "left", vjust = "top")
 #We can see no relavance, we see breakdown by studio and category as next step
-g2_1 <- g2 + facet_wrap(~genre)
+g2_1 <- g2 + facet_wrap(~genre);g2_1
 g2_1_text <- movie %>% 
   group_by(genre) %>%
   summarise(x = -Inf, y = Inf,
             correlation = cor(avg_rating, adjusted_gross),
-            text = str_c("Correlation is ",round(correlation,5)))
-g2_1_text_size <- movie %>%
-  group_by(genre) %>%
-  summarise(x = -Inf, y = Inf,
             size = n(),
-            text = str_c("\nn = ", size))
+            text = str_c("Correlation is ",round(correlation,5),"\nn = ", size))
 
 g2_2 <- g2 + 
-  geom_text(mapping = aes(x = x, y = y, label = text),data = g2_1_text,vjust = "top", hjust = "left") + 
-  geom_text(mapping = aes(x = x, y = y, label = text),data = g2_1_text_size,vjust = "top", hjust = "left") + 
+  geom_text_repel(mapping = aes(x = x, y = y, label = text),data = g2_1_text,vjust = "top", hjust = "left") + 
   facet_wrap(~genre);g2_2
 

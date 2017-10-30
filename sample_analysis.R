@@ -18,6 +18,8 @@ movie <- original_data %>%
 #data exploration
 #(1) rating difference
 #add rate_diff column
+install.packages('ggrepel')
+library(ggrepel)
 d1 <- movie %>%
   mutate(imdb_minus_movielens = imdb_rating - 2*movielens_rating, 
          x = row_number())
@@ -33,7 +35,7 @@ g1 <- d1 %>%
 d1_text <- d1 %>%
   filter(abs(imdb_minus_movielens) > 1)
 g1_1 <- g1 + 
-  geom_text(mapping = aes(x = x, y = imdb_minus_movielens, label = movie_title), data = d1_text, nudge_x = 0.2,nudge_y = 0.15) +
+  geom_text_repel(mapping = aes(x = x, y = imdb_minus_movielens, label = movie_title), data = d1_text, nudge_x = 0.2,nudge_y = 0.15) +
   geom_hline(yintercept = 0, color = "red");g1_1
 
 #find those exceptional movies and see these movies' performance

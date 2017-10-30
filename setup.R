@@ -1,7 +1,7 @@
 #Set up function
 #run this function will set working directory, download required packages and optionally download dataset from given urls.
 #This function itself it dependent on "stringr" and "readr" packages
-#This function only supports reading csv file now
+#This function only supports reading csv file now.
 #... should contain the urls
 setup <- function(desired_working_file_name,required_packages,data_urls = FALSE){
   #initialize

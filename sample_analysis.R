@@ -58,20 +58,15 @@ d2_text <- tibble(x = -Inf, y = Inf, correlation = round(with(movie,cor(avg_rati
 
 g2_text <- g2 +geom_text(mapping  = aes( x = x, y =y, label = text),data = d2_text, hjust = "left", vjust = "top")
 #We can see no relavance, we see breakdown by studio and category as next step
-g2_1 <- g2 + facet_wrap(~genre)
+g2_1 <- g2 + facet_wrap(~genre);g2_1
 g2_1_text <- movie %>% 
   group_by(genre) %>%
   summarise(x = -Inf, y = Inf,
             correlation = cor(avg_rating, adjusted_gross),
-            text = str_c("Correlation is ",round(correlation,5)))
-g2_1_text_size <- movie %>%
-  group_by(genre) %>%
-  summarise(x = -Inf, y = Inf,
             size = n(),
-            text = str_c("\nn = ", size))
+            text = str_c("Correlation is ",round(correlation,5),"\nn = ", size))
 
 g2_2 <- g2 + 
   geom_text(mapping = aes(x = x, y = y, label = text),data = g2_1_text,vjust = "top", hjust = "left") + 
-  geom_text(mapping = aes(x = x, y = y, label = text),data = g2_1_text_size,vjust = "top", hjust = "left") + 
   facet_wrap(~genre);g2_2
 

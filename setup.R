@@ -1,12 +1,12 @@
 #Set up function
 #run this function will set working directory, download required packages and optionally download dataset from given urls.
 #This function itself it dependent on "stringr" and "readr" packages
-#This function only supports reading csv file now.
+#This function only supports reading csv file now
 #... should contain the urls
 setup <- function(desired_working_file_name,required_packages,data_urls = FALSE){
   #initialize
   prerequired_packages <- c("readr","stringr")
-  required_packages <- c(required_packages,prerequired_packages)
+  required_packages <- c(prerequired_packages,required_packages)
   installed_package_names <- row.names(installed.packages())
   
   #install and load required packages
@@ -44,7 +44,3 @@ setup <- function(desired_working_file_name,required_packages,data_urls = FALSE)
     }
   }
 }
-
-setup(desired_working_file_name = "team_assignment_1",
-      required_packages = c("tidyverse","stringr","forcats"),
-      dataset_urls = "https://raw.githubusercontent.com/yusuzech/data_vis_assignment/master/movie.csv")

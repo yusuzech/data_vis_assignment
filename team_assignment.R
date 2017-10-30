@@ -51,12 +51,12 @@ g1_2 <- d1_text %>%
 #(2) - 1
 g2 <- movie %>%
   ggplot(mapping = aes(x = avg_rating, y = adjusted_gross),alpha = 0.5) +
-  geom_point();p2
+  geom_point();g2
 
 d2_text <- tibble(x = -Inf, y = Inf, correlation = round(with(movie,cor(avg_rating,adjusted_gross)),6)) %>%
   mutate(text = str_c("Correaltio between adjusted gross revenue and average rating\n",correlation))
 
-g2_text <- p2 +geom_text(mapping  = aes( x = x, y =y, label = text),data = d2_text, hjust = "left", vjust = "top")
+g2_text <- g2 +geom_text(mapping  = aes( x = x, y =y, label = text),data = d2_text, hjust = "left", vjust = "top")
 #We can see no relavance, we see breakdown by studio and category as next step
 g2_1 <- g2 + facet_wrap(~genre)
 g2_1_text <- movie %>% 

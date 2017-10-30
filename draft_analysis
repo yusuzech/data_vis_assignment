@@ -1,22 +1,12 @@
 #--------------------------------------------
-#setup
-setwd("team_assignment")
-required_packages <- c("tidyverse","stringr","forcats","")
-installed_package_names <- row.names(installed.packages())
-for (i in required_packages){
-  if (i %in% installed_package_names){
-    require(i,character.only = TRUE)
-  } else {
-    install.packages(i)
-    require(i,character.only = TRUE)
-  }
-}
-
-original_data <- read_csv("movie.csv")
+#setup ("setup" function in "setup.R)
+setup(desired_working_file_name = "team_assignment_1",
+      required_packages = c("tidyverse","stringr","forcats"),
+      data_urls = "https://raw.githubusercontent.com/yusuzech/data_vis_assignment/master/movie.csv")
 
 #-------------------------------------------
 #data preparation
-
+original_data <- movie
 #(1)Change all column name to lower cases
 #(2)Create avg_rating column (imdb_rating + movielens_rating)/2
 colnames(original_data) <- tolower(colnames(original_data))
@@ -74,7 +64,7 @@ g2_1_text <- movie %>%
   summarise(x = -Inf, y = Inf,
             correlation = cor(avg_rating, adjusted_gross),
             text = str_c("Correlation is ",round(correlation,5)))
-movie %>%
+g2_1_text_size <- movie %>%
   group_by(genre) %>%
   summarise(x = -Inf, y = Inf,
             size = n(),
@@ -84,3 +74,4 @@ g2_2 <- g2 +
   geom_text(mapping = aes(x = x, y = y, label = text),data = g2_1_text,vjust = "top", hjust = "left") + 
   geom_text(mapping = aes(x = x, y = y, label = text),data = g2_1_text_size,vjust = "top", hjust = "left") + 
   facet_wrap(~genre);g2_2
+

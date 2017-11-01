@@ -10,4 +10,4 @@
 
 # Current setup function
 `setup(desired_working_file_name = "team_assignment_1",
-      required_packages = c("tidyverse","stringr","forcats","ggrepel"))`
+      required_packages = c("tidyverse","stringr","forcats","ggrepel","lubridate))`

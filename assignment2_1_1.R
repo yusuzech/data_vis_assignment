@@ -33,7 +33,8 @@ movie_highRate<-movie%>%
 movie_highRate%>%
   ggplot(mapping = aes(x = avg_rating, y =adjusted_gross)) +
   geom_point(alpha = 0.5) +
-  geom_smooth(color = "blue", se = FALSE)
+  geom_smooth(color = "blue", se = FALSE)+
+  ylim(0,2000)
 # geom_text_repel(mapping = aes( label = movie_title), nudge_x = 0.2,nudge_y = 0.15) +
 # geom_hline(yintercept = 0, color = "red")
 
@@ -43,7 +44,8 @@ movie_avgRate<-movie%>%
 movie_avgRate%>%
   ggplot(mapping = aes(x = avg_rating, y =adjusted_gross)) +
   geom_point(alpha = 0.5) +
-  geom_smooth(color = "blue", se = FALSE)
+  geom_smooth(color = "blue", se = FALSE)+
+  ylim(0,2000)
 
 movie_lowRate<-movie%>%
   filter(avg_rating<fivRate[2])
@@ -51,15 +53,16 @@ movie_lowRate<-movie%>%
 movie_lowRate%>%
   ggplot(mapping = aes(x = avg_rating, y =adjusted_gross)) +
   geom_point(alpha = 0.5) +
-  geom_smooth(color = "blue", se = FALSE)
+  geom_smooth(color = "blue", se = FALSE)+
+  ylim(0,2000)
 
 rating_text <- tibble(x = c(6.75,8.25, 5), y = 2000, text = c("average rating", "high rating","low rating"))
 
 final_graph <- ggplot() + 
-  geom_point(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), alpha = 0.5) +
-  geom_smooth(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "blue", se = FALSE) +
-  geom_point(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "green", alpha = 0.5) +
-  geom_smooth(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "red", se = FALSE) +
-  geom_point(data = movie_lowRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "red", alpha = 0.5) +
+  geom_point(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), alpha = 0.5) + ylim(0,2000)+
+  geom_smooth(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "purple", se = FALSE) +
+  geom_point(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "green", alpha = 0.5) +ylim(0,2000)+
+  geom_smooth(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "blue", se = FALSE) +
+  geom_point(data = movie_lowRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "red", alpha = 0.5) +ylim(0,2000)+
   geom_smooth(data = movie_lowRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "red", se = FALSE) +
   geom_text(data = rating_text, mapping = aes(x = x, y = y, label = text));final_graph

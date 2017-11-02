@@ -56,13 +56,20 @@ movie_lowRate%>%
   geom_smooth(color = "blue", se = FALSE)+
   ylim(0,2000)
 
-rating_text <- tibble(x = c(6.75,8.25, 5), y = 2000, text = c("average rating", "high rating","low rating"))
+rating_text <- tibble(x = c(6.75,8.25, 5), y = 1500, text = c("average rating", "high rating","low rating"))
 
 final_graph <- ggplot() + 
-  geom_point(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), alpha = 0.5) + ylim(0,2000)+
-  geom_smooth(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "purple", se = FALSE) +
-  geom_point(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "green", alpha = 0.5) +ylim(0,2000)+
-  geom_smooth(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "blue", se = FALSE) +
-  geom_point(data = movie_lowRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "red", alpha = 0.5) +ylim(0,2000)+
-  geom_smooth(data = movie_lowRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "red", se = FALSE) +
-  geom_text(data = rating_text, mapping = aes(x = x, y = y, label = text));final_graph
+  geom_point(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), color="seashell4",alpha = 0.3, size=3) + ylim(0,1800)+
+  geom_smooth(data = movie_avgRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "grey37", se = FALSE) +
+  geom_point(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "palegreen2", alpha = 0.5,size=3) +ylim(0,1800)+
+  geom_smooth(data = movie_highRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "seagreen4", se = FALSE) +
+  geom_point(data = movie_lowRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "maroon1", alpha = 0.5,size=3) +ylim(0,1800)+
+  geom_smooth(data = movie_lowRate, mapping = aes(x = avg_rating, y =adjusted_gross), color = "indianred4", se = FALSE) +
+  geom_text(data = rating_text, mapping = aes(x = x, y = y, label = text),size=5)+
+  labs(title='Rating and Gross correlation for movies in Netflix', size=10)+
+  theme_light();final_graph
+
+ggsave(filename = "Rating & Gross.jpeg",path = "graph", width = 30, height = 30 * 0.618, units = "cm")
+
+
+

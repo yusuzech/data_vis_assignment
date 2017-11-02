@@ -44,3 +44,9 @@ setup <- function(desired_working_file_name,required_packages,data_urls = FALSE)
     }
   }
 }
+
+#--------------------------------------------
+#setup ("setup" function in "setup.R")
+setup(desired_working_file_name = "team_assignment_1",
+      required_packages = c("tidyverse","stringr","forcats","ggrepel","RColorBrewer"),
+      data_urls = "https://raw.githubusercontent.com/yusuzech/data_vis_assignment/master/movie.csv")

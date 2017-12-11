@@ -95,26 +95,36 @@ track_bar_app <- plot_data %>%
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    # Application title
-   titlePanel("Lending Club Dashboard"),
+  fluidRow(
+    column(5),
+    column(3,
+           titlePanel("Lending Club Dashboard")
+           )
+  ), 
+  
    # Sidebar with a slider input for number of bins 
    fluidRow(
-       column(4,align="center",
-              plotOutput("table")),
-       column(8,
-              selectInput(inputId = "select_display",
+     column(4),
+     column(4,
+     wellPanel(selectInput(inputId = "select_display",
                           label = "Display Method:",
                           choices = c("percent","count"),
-                          selected = "count"),
-              plotOutput("status_bar"))
+                          selected = "count")))
    ),
    fluidRow(
-       column(5,
-              plotOutput("loan_line_chart")),
-       column(2,
+       column(2,align="center",
+              plotOutput("table")),
+       column(10,plotOutput("status_bar"))
+   ),
+   fluidRow(
+       
+       column(2,aline="center", wellPanel(
               checkboxGroupInput(inputId = "tracked_type",
                                  label = "Displayed Type(s):",
                                  choices = c("Fully Paid","Current","In Grace Period","Late (16-30 days)","Late (31-120 days)","Charged Off"),
-                                 selected = c("Fully Paid","Current"))),
+                                 selected = c("Fully Paid","Current")))),
+       column(5,
+              plotOutput("loan_line_chart")),
        column(5,
               plotOutput("track_bar"))
    )

@@ -37,7 +37,7 @@ total_numbers_display <- total_numbers %>%
 #text_out_put <- tibble(a = colnames(total_numbers_display),b = total_numbers_display[1,])
 total_text <- ggplot(data = tibble(x = c(0,1),y = c(0,1))) +
     geom_text(mapping = aes(x = x ,y = y,label = str_c(colnames(total_numbers_display),as.character(total_numbers_display),sep = ":\n")),
-              size = 10,
+              size = 8,
               data = tibble(x = 0.5,y =c(0.4,0.7)))+
     coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
     theme_void()
@@ -96,8 +96,8 @@ track_bar_app <- plot_data %>%
 ui <- fluidPage(
    # Application title
   fluidRow(
-    column(5),
-    column(3,
+    column(4),
+    column(4,
            titlePanel("Lending Club Dashboard")
            )
   ), 

@@ -37,7 +37,7 @@ total_numbers_display <- total_numbers %>%
 #text_out_put <- tibble(a = colnames(total_numbers_display),b = total_numbers_display[1,])
 total_text <- ggplot(data = tibble(x = c(0,1),y = c(0,1))) +
     geom_text(mapping = aes(x = x ,y = y,label = str_c(colnames(total_numbers_display),as.character(total_numbers_display),sep = ":\n")),
-              size = 10,
+              size = 8,
               data = tibble(x = 0.5,y =c(0.4,0.7)))+
     coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
     theme_void()
@@ -95,26 +95,36 @@ track_bar_app <- plot_data %>%
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    # Application title
-   titlePanel("Lending Club Dashboard"),
+  fluidRow(
+    column(4),
+    column(4,
+           titlePanel("Lending Club Dashboard")
+           )
+  ), 
+  
    # Sidebar with a slider input for number of bins 
    fluidRow(
-       column(4,align="center",
-              plotOutput("table")),
-       column(8,
-              selectInput(inputId = "select_display",
+     column(4),
+     column(4,
+     wellPanel(selectInput(inputId = "select_display",
                           label = "Display Method:",
                           choices = c("percent","count"),
-                          selected = "count"),
-              plotOutput("status_bar"))
+                          selected = "count")))
    ),
    fluidRow(
-       column(5,
-              plotOutput("loan_line_chart")),
-       column(2,
+       column(2,align="center",
+              plotOutput("table")),
+       column(10,plotOutput("status_bar"))
+   ),
+   fluidRow(
+       
+       column(2,aline="center", wellPanel(
               checkboxGroupInput(inputId = "tracked_type",
                                  label = "Displayed Type(s):",
                                  choices = c("Fully Paid","Current","In Grace Period","Late (16-30 days)","Late (31-120 days)","Charged Off"),
-                                 selected = c("Fully Paid","Current"))),
+                                 selected = c("Fully Paid","Current")))),
+       column(5,
+              plotOutput("loan_line_chart")),
        column(5,
               plotOutput("track_bar"))
    )

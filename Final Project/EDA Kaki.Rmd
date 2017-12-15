@@ -1,0 +1,227 @@
+---
+title: "EDA"
+author: "Kaki"
+date: "2017年12月15日"
+output: html_document
+---
+
+```{r load package}
+library(dplyr)
+library(tidyverse)
+library(stringr)
+library(forcats)
+library(lubridate)
+library(shiny)
+library(scales)
+library(RColorBrewer)
+#install.packages("shinydashboard")
+library(shinydashboard)
+#install.packages("filesstrings")
+library(filesstrings)
+library(magrittr)
+
+```
+
+
+
+```{r}
+data<-read_csv("LendingClubLoanStatus2017Q2.csv")
+```
+
+```{r}
+Sys.setlocale("LC_ALL","English")
+dataset <- data %>%
+    filter(!(loan_status == "Default"))
+    
+#change class of columns(to factor)
+dataset <- data %>%
+    mutate(term = as.factor(term),
+           int_rate = as.numeric(str_sub(int_rate,start = 1L, end = -2L))/100,
+           grade = as.factor(grade),
+           sub_grade = as.factor(grade),
+           emp_length =  fct_relevel(factor(emp_length),"10+ years",after = 10),
+           home_ownership = as.factor(home_ownership),
+           issue_d = as.Date(str_c("2017-",issue_d),format = "%Y-%b-%d"),
+           loan_status = factor(loan_status,
+                                   levels = c("Fully Paid","Current","In Grace Period","Late (16-30 days)","Late (31-120 days)","Charged Off")),
+           purpose = as.factor(purpose),
+           title = as.factor(title),
+           application_type = as.factor(application_type))
+
+```
+
+1.a
+
+```{r}
+dataset%>%
+  filter(!(loan_status=="Current"| loan_status=="Charged Off" ))%>%
+  group_by(chargeoff_within_12_mths,loan_status)%>%
+  summarise(count= n())%>%
+  mutate(pct=count/sum(count))%>%
+  ggplot(aes(x=chargeoff_within_12_mths, y= pct, fill = loan_status))+
+  geom_col(position = "dodge")
+
+```
+
+
+```{r}
+dataset%>%
+  filter(!(loan_status=="Current"| loan_status=="Charged Off" ))%>%
+  mutate(deli_group=cut(delinq_2yrs, breaks = c(-Inf,2,4,6,8,10,12,14)))%>%
+  group_by(deli_group,loan_status)%>%
+  summarise(count= n())%>%
+  mutate(pct=count/sum(count))%>%
+  ggplot(aes(x=deli_group, y= pct, fill = loan_status))+
+  geom_col(position = "dodge")
+```
+
+
+```{r}
+dataset%>%
+  filter(!(loan_status=="Current"| loan_status=="Charged Off" ))%>%
+  filter(!(delinq_amnt == 0))%>%
+  mutate(deliamt_group=cut(delinq_amnt, breaks = c(1,100,500,1000,5000,Inf)))%>%
+  group_by(deliamt_group,loan_status)%>%
+  summarise(count= n())%>%
+  mutate(pct=count/sum(count))%>%
+  ggplot(aes(x=deliamt_group, y= pct, fill = loan_status))+
+  geom_col(position = "dodge")
+```
+
+2.a
+
+```{r}
+#install.packages("stringi")
+library(stringi)
+data2<-data%>%
+  mutate(emp_length=as.numeric(unlist(stri_extract_all_regex(emp_length,"[0-9]+"))))%>%
+  mutate(term=as.numeric(unlist(stri_extract_all_regex(term,"[0-9]+"))))
+```
+
+
+```{r}
+data2%>%
+  filter(!(loan_status=="Current"))%>%
+  mutate(empyr_group=cut(emp_length, breaks = c(0,3,6,9,10)))%>%
+  group_by(empyr_group)%>%
+  summarise(avg_amnt= mean(loan_amnt))%>%
+  ggplot(aes(x=empyr_group,y=avg_amnt))+
+  geom_col()
+```
+2.b
+
+```{r}
+data2%>%
+  filter(!(loan_status=="Current"))%>%
+  mutate(empyr_group=cut(emp_length, breaks = c(0,3,6,9,10)))%>%
+  group_by(empyr_group,loan_status)%>%
+  summarise(count= n())%>%
+  mutate(pct=count/sum(count))%>%
+  ggplot(aes(x=empyr_group, y= pct, fill = loan_status))+
+  geom_col(position = "dodge")
+```
+2.c
+```{r}
+data2%>%
+  group_by(emp_length,home_ownership)%>%
+  summarise(count=n())%>%
+  mutate(pct=round(count/sum(count),2))%>%
+  ggplot(aes(x=emp_length,y= pct,fill = home_ownership))+
+  geom_col(position = "dodge")
+```
+3 total balance
+```{r}
+dataset%>%
+  ggplot(aes(x=tot_cur_bal))+
+  geom_histogram(bins = 100)+
+  xlim(0,1000000)
+
+data2%>%
+  mutate(balance_group=cut(tot_cur_bal, breaks = c(0,100000,250000,5000000,10000000)))%>%
+  group_by(balance_group)%>%
+  summarise(avg_term= mean(term))%>%
+  ggplot(aes(x=balance_group,y=avg_term))+
+  geom_col()
+```
+
+
+
+annual income
+```{r}
+dataset%>%
+  ggplot(aes(x=annual_inc))+
+  geom_histogram(bins = 100)+
+  xlim(0,500000)
+
+data2%>%
+  mutate(annual_group=cut(annual_inc, breaks = c(0,50000,100000,200000,10000000)))%>%
+  group_by(annual_group)%>%
+  summarise(avg_term= mean(term))%>%
+  ggplot(aes(x=annual_group,y=avg_term))+
+  geom_col()
+```
+4. 
+```{r}
+dataset%>%
+  ggplot(aes(x=annual_inc,y=int_rate))+
+  geom_point()+
+  xlim(0,1500000)+
+  geom_smooth()
+```
+delinq amount
+```{r}
+dataset%>%
+  ggplot(aes(x=delinq_amnt,y=int_rate))+
+  geom_point()+
+  xlim(0,100000)+
+  geom_smooth()
+```
+purpose
+```{r}
+dataset%>%
+  ggplot(aes(x=purpose, y=int_rate))+
+  geom_col()+
+  coord_flip()
+  #theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+5. 
+
+```{r}
+dataset%>%
+  filter(!is.na(emp_title))%>%
+  group_by(emp_title)%>%
+  summarise(count=n())%>%
+  arrange(desc(count)) %>% 
+  filter (row_number() <=10)%>%
+  ggplot(aes(x=fct_reorder(emp_title, count),y=count))+
+  geom_col()+
+  coord_flip()
+```
+6.a
+```{r}
+dataset%>%
+  filter(!is.na(purpose))%>%
+  group_by(purpose)%>%
+  summarise(count=n())%>%
+  ggplot(aes(x=fct_reorder(purpose, count),y=count))+
+  geom_col()+
+  coord_flip()
+```
+
+
+6.b
+
+```{r}
+dataset%>%
+  filter(!is.na(purpose))%>%
+  filter(!(loan_status =="Current" | loan_status =="Fully Paid"))%>%
+  group_by(purpose,loan_status)%>%
+  summarise(count=n())%>%
+  mutate(pct=count/sum(count))%>%
+  ggplot(aes(x=purpose, y= pct, fill = loan_status))+
+  geom_col(position = "dodge")+
+  coord_flip()
+
+```

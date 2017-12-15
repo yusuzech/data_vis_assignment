@@ -103,32 +103,36 @@ ui <- fluidPage(
   ), 
   
    # Sidebar with a slider input for number of bins 
+
    fluidRow(
-     column(4),
-     column(4,
-     wellPanel(selectInput(inputId = "select_display",
+       column(2,
+              fluidRow(align="center",
+              plotOutput("table")),
+              fluidRow(wellPanel(selectInput(inputId = "select_display",
                           label = "Display Method:",
                           choices = c("percent","count"),
                           selected = "count")))
-   ),
-   fluidRow(
-       column(2,align="center",
-              plotOutput("table")),
-       column(10,plotOutput("status_bar"))
-   ),
+              ),
+       column(10,
+              plotOutput("status_bar"))),
    fluidRow(
        
-       column(2,aline="center", wellPanel(
+       column(2,
+         fluidRow(),
+         fluidRow(aline="center", wellPanel(
               checkboxGroupInput(inputId = "tracked_type",
                                  label = "Displayed Type(s):",
                                  choices = c("Fully Paid","Current","In Grace Period","Late (16-30 days)","Late (31-120 days)","Charged Off"),
-                                 selected = c("Fully Paid","Current")))),
+                                 selected = c("Fully Paid","Current"))))
+         ),
        column(5,
               plotOutput("loan_line_chart")),
        column(5,
               plotOutput("track_bar"))
    )
 )
+   
+   
 #-------------------------------------------------------
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -137,37 +141,8 @@ server <- function(input, output) {
     output$table <- renderPlot({total_text})
     
     #----------------------------------
-    #status bar YTD
-    YTD_display_method <- reactive({input$select_display})
-    output$status_bar <- renderPlot({
-        if(YTD_display_method() == "count"){
-            YTD_data_disply %>% 
-                ggplot(mapping = aes(x = loan_status,y = num_loan)) +
-                geom_col(fill = "skyblue3") +
-                #aethetics
-                theme_light() +
-                scale_y_continuous(labels = comma) +
-                #coord_flip() +
-                #theme(axis.text.x = element_text(size = rel(1.2),angle = 30, hjust = 1)) +
-                #extra info
-                geom_text(mapping = aes(label = format(num_loan,big.mark = ",")),vjust = -0.3) +
-                labs(x = "Loan Status", y = "Number of Notes")
-        } else if(YTD_display_method() == "percent"){
-            YTD_data_disply %>% 
-                ggplot(mapping = aes(x = loan_status,y = pct_loan)) +
-                geom_col(fill = "skyblue3") +
-                #aethetics
-                theme_light() +
-                scale_y_continuous(labels = percent) +
-                #coord_flip() +
-                #theme(axis.text.x = element_text(size = rel(1.2),angle = 30, hjust = 1)) +
-                #extra info
-                geom_text(mapping = aes(label = pct_dispaly,vjust = -0.3)) +
-                labs(x = "Loan Status", y = "Percentage")
-        }
-    })
-    #---------------------------
-    #line chart
+    
+        #line chart
     tracked_loan_type <- reactive({input$tracked_type})
     track_plot_data_specific <- reactive({track_plot_data %>%
         filter(loan_status %in% tracked_loan_type())})
@@ -186,13 +161,48 @@ server <- function(input, output) {
             theme(legend.position="top") +
             #layer of info
             geom_text(mapping = aes(y = n_notes,label = format(n_notes,big.mark = ",")),vjust="inward",hjust="inward") +
-            labs(x = "Month", y = "Number of Notes")
+            labs(x = "Month", y = "Number of Notes",title="Month over Month Status")
     })
     #--------------------------------
     #track bar chart
     output$track_bar <- renderPlot({
         track_bar_app
     })
+     #---------------------------
+    
+    #status bar YTD
+    YTD_display_method <- reactive({input$select_display})
+   
+    
+    output$status_bar <- renderPlot({
+        if(YTD_display_method() == "count"){
+            YTD_data_disply %>% 
+                ggplot(mapping = aes(x = loan_status,y = num_loan)) +
+                geom_col(fill = "skyblue3") +
+                #aethetics
+                theme_light() +
+                scale_y_continuous(labels = comma) +
+                #coord_flip() +
+                #theme(axis.text.x = element_text(size = rel(1.2),angle = 30, hjust = 1)) +
+                #extra info
+                geom_text(mapping = aes(label = format(num_loan,big.mark = ",")),vjust = -0.3) +
+                labs(x = "Loan Status", y = "Percentage",title="Loan Status Overview")
+        } else if(YTD_display_method() == "percent"){
+            YTD_data_disply %>% 
+                ggplot(mapping = aes(x = loan_status,y = pct_loan)) +
+                geom_col(fill = "skyblue3") +
+                #aethetics
+                theme_light() +
+                scale_y_continuous(labels = percent) +
+                #coord_flip() +
+                #theme(axis.text.x = element_text(size = rel(1.2),angle = 30, hjust = 1)) +
+                #extra info
+                geom_text(mapping = aes(label = pct_dispaly,vjust = -0.3)) +
+                labs(x = "Loan Status", y = "Percentage",title="Loan Status Overview")
+        }
+    })
+   
+
 }
 
 # Run the application 
